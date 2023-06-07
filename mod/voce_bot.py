@@ -4,7 +4,10 @@ import requests
 from mod.mongo_model import *
 import time
 import sys
+import logging
 
+# 日志
+logging.basicConfig(format='%(asctime)s %(message)s', filename = os.path.join(os.getcwd(),'log.txt'), level=logging.INFO)
 
 dbname = "test"
 
@@ -383,11 +386,13 @@ class MessageHandler:
         if self.get_user_current_chat_mode() == "1":
             history_msg = self.process_user_history_msg()
             if len(history_msg) > 0:
-                send_msg.append(history_msg[0])
+                send_msg += history_msg
             send_msg.append({'role': "user", 'content': self.msg})
+            logging.info(send_msg)
             response = send_msg_to_openai(send_msg)
         else:
             send_msg.append({'role': "user", 'content': self.msg})
+            logging.info(send_msg)
             response = send_msg_to_openai(send_msg)
 
         if response != "超时错误，请重试！":
