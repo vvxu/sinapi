@@ -25,10 +25,10 @@ class WeChatOAHandler:
     def __init__(self, xml_data):
         self.parse_xml = Et.fromstring(xml_data)
         self.xml_data = etree.fromstring(xml_data)
-        self.ToUserName = self.xml_data.find('ToUserName').text
-        self.FromUserName = self.xml_data.find('FromUserName').text
-        self.CreateTime = self.xml_data.find('CreateTime').text
-        self.MsgType = self.xml_data.find('MsgType').text
+        self.ToUserName = self.parse_xml.find('ToUserName').text
+        self.FromUserName = self.parse_xml.find('FromUserName').text
+        self.CreateTime = self.parse_xml.find('CreateTime').text
+        self.MsgType = self.parse_xml.find('MsgType').text
 
     def handle(self):
         if self.is_event_type():
@@ -61,8 +61,8 @@ class WeChatOAHandler:
         current_time = int(time.time())
         message = f"""
             <xml>
-            <ToUserName><![CDATA[{self.ToUserName}]]></ToUserName>
-            <FromUserName><![CDATA[{self.FromUserName}]]></FromUserName>
+            <ToUserName><![CDATA[{self.FromUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{self.ToUserName}]]></FromUserName>
             <CreateTime>{current_time}</CreateTime>
             <MsgType><![CDATA[text]]></MsgType>
             <Content><![CDATA[{content}]]></Content>
@@ -74,6 +74,7 @@ class WeChatOAHandler:
         try:
             message = self.send_msg_type(content)
             logging.info("send_msg message")
+            logging.info(message)
             return Response(message, media_type="application/xml")
         except Exception:
             logging.info("send_msg Exception")
