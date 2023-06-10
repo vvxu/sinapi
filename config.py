@@ -20,6 +20,10 @@ access_token_expire_minutes = os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')
 # 微信
 wechat_oa_token = os.environ.get('WECHAT_OA_TOKEN')
 
+# chatgpt
+chatgpt_username = ""
+chatgpt_password = ""
+
 
 class Settings:
     Api = {
@@ -31,6 +35,10 @@ class Settings:
         "secret_key": user_info_secret_key,
         "access_token_expire_minutes": access_token_expire_minutes,
         "algorithm": "HS256",
+    }
+    Chatgpt = {
+        "username": chatgpt_username,
+        "password": chatgpt_password
     }
     WechatOA = {
         "token": wechat_oa_token

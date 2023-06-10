@@ -26,6 +26,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = Settings.Api["access_token_expire_minutes"]
 app = FastAPI(title=Settings.Api["APP_NAME"])
 
 
+def get_user_info(user):
+    user_information = PymongoCRUD("userinformation", "user")
+    filter = {f'user.{user}.username': f'{user}'}
+    search_user = user_information.find_one(filter)
+    return search_user["user"]
+
+
 # 密码部分
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)

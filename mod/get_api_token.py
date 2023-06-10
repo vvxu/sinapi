@@ -4,24 +4,15 @@ from config import *
 import logging
 from mod.mongo_model import *
 
+
 # 日志
 logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)
-
-
-def get_user_info(user):
-    user_information = PymongoCRUD("userinformation", "user")
-    filter = {f'user.{user}.username': f'{user}'}
-    search_user = user_information.find_one(filter)
-    return search_user["user"]
+username = Settings.Chatgpt["username"]
+password = Settings.Chatgpt["password"]
 
 
 def get_this_api_token():
     try:
-        user = get_user_info("admin")
-        logging.info(user)
-        username = user["admin"]["username"]
-        logging.info(username)
-        password = user["admin"]["password"]
         url = Settings.Api["token_url"]
         data = {"username": username, "password": password}
         res = requests.post(url, data=data)
