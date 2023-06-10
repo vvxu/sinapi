@@ -1,14 +1,23 @@
 import os
 
+# openai
 openai_key = os.environ.get('OPENAI_KEY')
+
+# mongo
 mongo_uri = os.environ.get('MONGO_URI')
+
+# voce_chat
 voce_secret = os.environ.get('VOCE_SECRET')
 voce_url = os.environ.get('VOCE_URL')
 voce_bot_id = os.environ.get('VOCE_BOT_ID')
 voce_dbname = os.environ.get('VOCE_DBNAME')
-api_username = os.environ.get('API_USERNAME')
-api_passwd = os.environ.get('API_PASSWD')
+
+# api
 api_token_url = os.environ.get('API_TOKEN_URL')
+user_info_secret_key = os.environ.get('USER_INFO_SECRET_KEY')
+access_token_expire_minutes = os.environ.get('ACCESS_TOKEN_EXPIRE_MINUTES')
+
+# 微信
 wechat_oa_token = os.environ.get('WECHAT_OA_TOKEN')
 
 
@@ -18,9 +27,10 @@ class Settings:
         "APP_NAME": "sin_api",
         "PORT": 20001,
         "RELOAD": True,
-        "username": api_username,
-        "password": api_passwd,
-        "token_url": api_token_url
+        "token_url": api_token_url,
+        "secret_key": user_info_secret_key,
+        "access_token_expire_minutes": access_token_expire_minutes,
+        "algorithm": "HS256",
     }
     WechatOA = {
         "token": wechat_oa_token
