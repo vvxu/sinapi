@@ -15,22 +15,23 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 
 
-# 密码生成函数
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-ALGORITHM = Settings.Api["algorithm"]
-ACCESS_TOKEN_EXPIRE_MINUTES = Settings.Api["access_token_expire_minutes"]
-
-
-# 构建app
-app = FastAPI(title=Settings.Api["APP_NAME"])
-
-
 def get_user_info(user):
     user_information = PymongoCRUD("userinformation", "user")
     filter = {f'user.{user}.username': f'{user}'}
     search_user = user_information.find_one(filter)
     return search_user["user"]
+
+
+# 密码生成函数
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+ALGORITHM = Settings.Api["algorithm"]
+ACCESS_TOKEN_EXPIRE_MINUTES = Settings.Api["access_token_expire_minutes"]
+user_info = get_user_info('admin')
+
+
+# 构建app
+app = FastAPI(title=Settings.Api["APP_NAME"])
 
 
 # 密码部分
@@ -82,7 +83,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(get_user_info('admin'), username=token_data.username)
+    user = get_user(user_info, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -102,7 +103,7 @@ async def index():
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(get_user_info('admin'), form_data.username, form_data.password)
+    user = authenticate_user(user_info, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
