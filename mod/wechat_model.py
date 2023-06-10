@@ -1,0 +1,70 @@
+import time
+from fastapi import Response
+import xml.etree.ElementTree as Et
+from lxml import etree
+from mod.get_api_token import *
+
+# Command constants
+COMMAND_NEWCOMER_TEXT = "谢谢关注！！！ \n 发送指令：\n   验证码:可以获取网页验证码，验证码时效为3天!"
+COMMAND_HELP = "帮助"
+COMMAND_GET_VERIFICATION_CODE = "验证码"
+
+# WeChat help dictionary
+WECHAT_HELP = {
+    COMMAND_HELP: "调出帮助菜单",
+    COMMAND_GET_VERIFICATION_CODE: "获取一个chatgpt的验证码，持续时间"
+}
+
+
+class WeChatOAHandler:
+    def __init__(self, xml_data):
+        self.parse_xml = Et.fromstring(xml_data)
+        self.xml_data = etree.fromstring(xml_data)
+        self.ToUserName = self.xml_data.find('ToUserName').text
+        self.FromUserName = self.xml_data.find('FromUserName').text
+        self.CreateTime = self.xml_data.find('CreateTime').text
+        self.MsgType = self.xml_data.find('MsgType').text
+
+    def handle(self):
+        if self.is_event_type():
+            return self.send_msg(self.is_event_type())
+
+        if self.is_text_type():
+            user_msg = self.get_user_msg()
+            if self.is_get_verification_code(user_msg):
+                return self.get_verification_code()
+
+    def is_text_type(self):
+        return self.MsgType == 'text'
+
+    def get_user_msg(self):
+        return self.xml_data[4].text
+
+    def is_event_type(self):
+        return self.MsgType == 'event'
+
+    def is_get_verification_code(self, msg):
+        return msg.startswith(COMMAND_GET_VERIFICATION_CODE)
+
+    def get_verification_code(self):
+        return self.send_msg(get_this_api_token())
+
+    def send_msg_type(self, content):
+        current_time = int(time.time())
+        message = f"""
+            <xml>
+            <ToUserName><![CDATA[{self.ToUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{self.FromUserName}]]></FromUserName>
+            <CreateTime>{current_time}</CreateTime>
+            <MsgType><![CDATA[text]]></MsgType>
+            <Content><![CDATA[{content}]]></Content>
+            </xml>
+        """
+        return message
+
+    def send_msg(self, content):
+        message = self.send_msg_type(content)
+        try:
+            return Response(message, media_type="application/xml")
+        except Exception:
+            return Response('success')

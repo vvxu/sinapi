@@ -5,6 +5,9 @@ mongo_uri = os.environ.get('MONGO_URI')
 voce_secret = os.environ.get('VOCE_SECRET')
 voce_url = os.environ.get('VOCE_URL')
 voce_bot_id = os.environ.get('VOCE_BOT_ID')
+api_username = os.environ.get('API_USERNAME')
+api_passwd = os.environ.get('API_PASSWD')
+api_token_url = os.environ.get('API_TOKEN_URL')
 
 
 class Settings:
@@ -12,7 +15,10 @@ class Settings:
         "HOST": "0.0.0.0",
         "APP_NAME": "sin_api",
         "PORT": 20001,
-        "RELOAD": True
+        "RELOAD": True,
+        "username": api_username,
+        "password": api_passwd,
+        "token_url": api_token_url
     }
     Openai = {
         "secret": openai_key,

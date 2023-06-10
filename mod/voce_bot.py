@@ -7,7 +7,7 @@ import sys
 import logging
 
 # 日志
-logging.basicConfig(format='%(asctime)s %(message)s', filename = os.path.join(os.getcwd(),'log.txt'), level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)
 
 dbname = "test"
 
@@ -271,7 +271,7 @@ class MessageHandler:
 
     # 切换模式
     def is_switch_context_mode_command(self):
-        return command_context_mode in self.msg[:len(command_context_mode)+1]
+        return self.msg.startswith(command_context_mode)
 
     def is_switch_single_chat_mode_command(self):
         return command_single_mode in self.msg[:len(command_context_mode)+1]
