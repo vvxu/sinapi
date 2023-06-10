@@ -3,6 +3,11 @@ from fastapi import Response
 import xml.etree.ElementTree as Et
 from lxml import etree
 from mod.get_api_token import *
+import logging
+
+# 日志
+logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)
+
 
 # Command constants
 COMMAND_NEWCOMER_TEXT = "谢谢关注！！！ \n 发送指令：\n   验证码:可以获取网页验证码，验证码时效为3天!"
@@ -27,11 +32,14 @@ class WeChatOAHandler:
 
     def handle(self):
         if self.is_event_type():
+            logging.info("self.is_event_type")
             return self.send_msg(self.is_event_type())
 
         if self.is_text_type():
             user_msg = self.get_user_msg()
+            logging.info("user_msg")
             if self.is_get_verification_code(user_msg):
+                logging.info("self.is_get_verification_code")
                 return self.get_verification_code()
 
     def is_text_type(self):
@@ -63,8 +71,10 @@ class WeChatOAHandler:
         return message
 
     def send_msg(self, content):
-        message = self.send_msg_type(content)
         try:
+            message = self.send_msg_type(content)
+            logging.info("send_msg message")
             return Response(message, media_type="application/xml")
         except Exception:
+            logging.info("send_msg Exception")
             return Response('success')

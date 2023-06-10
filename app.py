@@ -43,14 +43,13 @@ async def run_handler(data):
 # 微信公众号接口
 @app.get("/wechatOA")
 async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
-    _sToken = "abcde"
     if not all([signature, timestamp, nonce, echostr]):
         return "参数校验失败"
-    sign = hashlib.sha1("".join(sorted([_sToken, timestamp, nonce])).encode('UTF-8')).hexdigest()
+    sign = hashlib.sha1("".join(sorted([Settings.WechatOA["token"], timestamp, nonce])).encode('UTF-8')).hexdigest()
     return HTMLResponse(content=echostr if sign == signature else "error")
 
 
 @app.post("/wechatOA")
 async def wechat(request: Request):
-    wechat_handler = WeChatOAHandler(request.body())
+    wechat_handler = WeChatOAHandler(await request.body())
     return wechat_handler.handle()

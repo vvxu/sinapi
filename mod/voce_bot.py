@@ -9,7 +9,7 @@ import logging
 # 日志
 logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)
 
-dbname = "test"
+dbname = Settings.VoceChat["dbname"]
 
 # 数据连接
 Current_Chat_Mode = PymongoCRUD(dbname, "current_chat_mode")
