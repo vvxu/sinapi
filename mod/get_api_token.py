@@ -18,7 +18,9 @@ def get_user_info(user):
 def get_this_api_token():
     try:
         user = get_user_info("admin")
+        logging.info(user)
         username = user["admin"]["username"]
+        logging.info(username)
         password = user["admin"]["password"]
         url = Settings.Api["token_url"]
         data = {"username": username, "password": password}

@@ -32,12 +32,10 @@ class WeChatOAHandler:
 
     def handle(self):
         if self.is_event_type():
-            logging.info("self.is_event_type")
             return self.send_msg(self.is_event_type())
 
         if self.is_text_type():
             user_msg = self.get_user_msg()
-            logging.info("user_msg")
             if self.is_get_verification_code(user_msg):
                 logging.info("self.is_get_verification_code")
                 return self.get_verification_code()
@@ -73,8 +71,6 @@ class WeChatOAHandler:
     def send_msg(self, content):
         try:
             message = self.send_msg_type(content)
-            logging.info("send_msg message")
-            logging.info(message)
             return Response(message, media_type="application/xml")
         except Exception:
             logging.info("send_msg Exception")
