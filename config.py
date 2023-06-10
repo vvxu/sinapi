@@ -23,7 +23,7 @@ wechat_oa_token = os.environ.get('WECHAT_OA_TOKEN')
 # chatgpt
 chatgpt_username = ""
 chatgpt_password = ""
-chatgpt_url = ""
+chatgpt_token_url = ""
 
 class Settings:
     Api = {
@@ -39,7 +39,7 @@ class Settings:
     Chatgpt = {
         "username": chatgpt_username,
         "password": chatgpt_password,
-        "token_url": chatgpt_url
+        "token_url": chatgpt_token_url
     }
     WechatOA = {
         "token": wechat_oa_token

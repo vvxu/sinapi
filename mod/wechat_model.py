@@ -53,7 +53,17 @@ class WeChatOAHandler:
         return msg.startswith(COMMAND_GET_VERIFICATION_CODE)
 
     def get_verification_code(self):
-        return self.send_msg(get_this_api_token())
+        try:
+            username = Settings.Chatgpt["username"]
+            password = Settings.Chatgpt["password"]
+            url = Settings.Chatgpt["token_url"]
+            data = {"username": username, "password": password}
+            res = requests.post(url, data=data)
+            logging.info("get_this_api_token res")
+            token = res.json()["access_token"]
+            return self.send_msg(token)
+        except:
+            return self.send_msg("获取验证码失败...")
 
     def send_msg_type(self, content):
         current_time = int(time.time())

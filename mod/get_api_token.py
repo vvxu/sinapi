@@ -13,7 +13,7 @@ def get_this_api_token():
     try:
         username = Settings.Chatgpt["username"]
         password = Settings.Chatgpt["password"]
-        url = Settings.Chatgpt["url"]
+        url = Settings.Chatgpt["token_url"]
         data = {"username": username, "password": password}
         res = requests.post(url, data=data)
         logging.info("get_this_api_token res")
