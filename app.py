@@ -6,6 +6,8 @@ from models import *
 import hashlib
 from mod.voce_bot import *
 from mod.wechat_model import *
+from mod.get_api_token import *
+from mod.connect_openai import *
 import time
 from starlette.responses import HTMLResponse
 from passlib.context import CryptContext
@@ -25,13 +27,6 @@ app = FastAPI(title=Settings.Api["APP_NAME"])
 
 
 # 密码部分
-def get_user_info(user):
-    userinformation = PymongoCRUD("userinformation", "user")
-    filter = {f'user.{user}.username': f'{user}'}
-    search_user = userinformation.find_one(filter)
-    return search_user["user"]
-
-
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -80,7 +75,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(get_user_info['admin'], username=token_data.username)
+    user = get_user(get_user_info('admin'), username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -92,9 +87,15 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
+# 路由
+@app.get("/")
+async def index():
+    return "你好"
+
+
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(get_user_info['admin'], form_data.username, form_data.password)
+    user = authenticate_user(get_user_info('admin'), form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -116,10 +117,12 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
-# 路由
-@app.get("/")
-async def index():
-    return "你好"
+# chatgpt-api
+@app.post("/chatgpt")
+async def chatgpt(item: dict, current_user: User = Depends(get_current_active_user)):
+    logging.info("提问：%s" % item['messages'][-1]['content'])
+    ans = send_msg_to_openai(item["messages"])
+    return {"content": ans}
 
 
 # 验证连接
