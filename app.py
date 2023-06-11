@@ -18,7 +18,6 @@ from mod.generate_data import *
 
 def get_user_info(user):
     user_information = PymongoCRUD("userinformation", "user")
-    print (user)
     filter = {f'user.{user}.username': f'{user}'}
     search_user = user_information.find_one(filter)
     return search_user["user"]
