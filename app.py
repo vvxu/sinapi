@@ -1,5 +1,5 @@
-# from fastapi.responses import HTMLResponse
-# from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request, Response, Depends, status
 import hashlib
@@ -7,6 +7,7 @@ from starlette.responses import HTMLResponse
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # 引用mod中的方法
 from mod.voce_bot import *
@@ -17,6 +18,7 @@ from mod.generate_data import *
 
 def get_user_info(user):
     user_information = PymongoCRUD("userinformation", "user")
+    print (user)
     filter = {f'user.{user}.username': f'{user}'}
     search_user = user_information.find_one(filter)
     return search_user["user"]
@@ -32,7 +34,8 @@ user_info = get_user_info('admin')
 
 # 构建app
 app = FastAPI(title=Settings.Api["APP_NAME"])
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # 跨域
 app.add_middleware(
@@ -105,9 +108,14 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-@app.get("/")
-async def index():
-    return "你好"
+# @app.get("/")
+# async def index():
+#     return "dd"
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 # 路由
