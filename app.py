@@ -167,3 +167,32 @@ async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
 async def wechat(request: Request):
     wechat_handler = WeChatOAHandler(await request.body())
     return wechat_handler.handle()
+
+
+codes = []
+
+
+@app.post("/generate_code")
+async def generate_code():
+    code = "123456"  # Generate a verification code (You can use your own logic here)
+    expire_time = datetime.now() + timedelta(hours=1)
+    verification_code = VerificationCode(code=code, expire_time=expire_time)
+    codes.append(verification_code)
+    return {"code": code}
+
+
+@app.post("/validate_code")
+async def validate_code(verification_code: VerificationCode):
+    for code in codes:
+        if code.code == verification_code.code and code.expire_time > datetime.now():
+            return {"valid": True}
+    return {"valid": False}
+
+
+@app.post("/request_with_code")
+async def request_with_code(verification_code: VerificationCode):
+    for code in codes:
+        if code.code == verification_code.code and code.expire_time > datetime.now():
+            return {"success": True}
+    return {"success": False}
+

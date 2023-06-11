@@ -1,5 +1,6 @@
 from typing import Optional, Union, Set, List
 from pydantic import BaseModel
+from datetime import datetime, timedelta
 
 
 # user
@@ -61,3 +62,8 @@ class VoceMsg(BaseModel):
     from_uid: Union[int, None] = None
     mid: Union[int, None] = None
     target: Union[VoceTarget, None] = None
+    
+
+class VerificationCode(BaseModel):
+    code: str
+    expire_time: datetime
