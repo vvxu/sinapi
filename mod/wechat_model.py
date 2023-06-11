@@ -2,9 +2,9 @@ import time
 from fastapi import Response
 import xml.etree.ElementTree as Et
 from lxml import etree
-from mod.get_api_token import *
+# from mod.get_api_token import *
+import os
 import logging
-import requests
 
 # 日志
 logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)

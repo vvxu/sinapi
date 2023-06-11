@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # 引用mod中的方法
 from mod.voce_bot import *
 from mod.wechat_model import *
-from mod.get_api_token import *
+# from mod.get_api_token import *
 from mod.connect_openai import *
 from mod.generate_data import *
 
@@ -35,6 +35,7 @@ user_info = get_user_info('admin')
 
 # 构建app
 app = FastAPI(title=Settings.Api["APP_NAME"])
+
 
 # 跨域
 app.add_middleware(
@@ -151,9 +152,6 @@ async def run_handler(data):
     handler.handle()
 
 
-codes = []
-
-
 # 微信公众号接口
 @app.get("/wechatOA")
 async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
@@ -167,54 +165,22 @@ async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
 async def wechat(request: Request):
     insert = GenerateCode("chatgpt", 6)
     code = insert.insert_code()
-    # code = generate_random_string(6)
-    # expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
-    # verification_code = VerificationCode(code=code, expire_time=expire_time)
-    # codes.append(verification_code)
     wechat_handler = WeChatOAHandler(await request.body(), code)
     return wechat_handler.handle()
 
 
 @app.post("/validate_code")
 async def validate_code(verification_code: VerificationCode):
-    print(verification_code.code)
-    # current_time = int(datetime.now().timestamp())
-    
     validate = GenerateCode("chatgpt", 6, verification_code.code)
     return validate.validate_code()
-
-    # print (code)
-    # for code in codes:
-    #     if code.code == verification_code.code and code.expire_time > current_time:
-    #         return "true"
-    # return "false"
-
-
-@app.post("/request_with_code")
-async def request_with_code(verification_code: VerificationCode):
-    current_time = int(datetime.now().timestamp())
-    for code in codes:
-        if code.code == verification_code.code and code.expire_time > current_time:
-            return {"success": True}
-    return {"success": False}
 
 
 # chatgpt-api
 @app.post("/chatgpt")
 async def chatgpt(item: dict):
-    # current_time = int(datetime.now().timestamp())
     validate = GenerateCode("chatgpt", 6, item["messages"]["code"])
-    
     if validate.validate_code() == "true":
         ans = send_msg_to_openai(item["messages"]["content"])
         logging.info(f"{item['messages']['code']}提问：{item['messages']['content'][-1]['content']}")
         return {"content": ans}
     return "false"
-
-    
-    # for code in codes:
-    #     if code.code == item["messages"]["code"] and code.expire_time > current_time:
-    #         ans = send_msg_to_openai(item["messages"]["content"])
-    #         return {"content": ans}
-    # return "false"
-

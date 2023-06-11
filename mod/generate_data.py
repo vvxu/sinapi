@@ -1,7 +1,6 @@
 import random
 import string
 from mod.mongo_model import *
-from datetime import datetime, timedelta
 from models import *
 
 
@@ -56,8 +55,8 @@ class GenerateCode:
 
     # 验证
     def validate_code(self):
-        # 当前时间
         find_data = {"code": self.code}
-        if find_data["code"] == self.code and find_data["expire_time"] > self.current_time:
+        this_find_data = self.current_db.find_one(find_data)
+        if this_find_data["code"] == self.code and this_find_data["expire_time"] > self.current_time:
             return "true"
         return "false"
