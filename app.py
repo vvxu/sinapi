@@ -13,6 +13,7 @@ from starlette.responses import HTMLResponse
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+from fastapi.middleware.cors import CORSMiddleware
 
 
 def get_user_info(user):
@@ -32,6 +33,15 @@ user_info = get_user_info('admin')
 
 # 构建app
 app = FastAPI(title=Settings.Api["APP_NAME"])
+
+# 跨域
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # 密码部分
@@ -178,7 +188,7 @@ async def wechat(request: Request):
 @app.post("/generate_code")
 async def generate_code():
     code = "123456"  # Generate a verification code (You can use your own logic here)
-    expire_time = datetime.now() + timedelta(hours=1)
+    expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
     verification_code = VerificationCode(code=code, expire_time=expire_time)
     codes.append(verification_code)
     return {"code": code}
@@ -186,16 +196,19 @@ async def generate_code():
 
 @app.post("/validate_code")
 async def validate_code(verification_code: VerificationCode):
+    print(verification_code.code)
+    current_time = int(datetime.now().timestamp())
     for code in codes:
-        if code.code == verification_code.code and code.expire_time > datetime.now():
+        if code.code == verification_code.code and code.expire_time > current_time:
             return {"valid": True}
     return {"valid": False}
 
 
 @app.post("/request_with_code")
 async def request_with_code(verification_code: VerificationCode):
+    current_time = int(datetime.now().timestamp())
     for code in codes:
-        if code.code == verification_code.code and code.expire_time > datetime.now():
+        if code.code == verification_code.code and code.expire_time > current_time:
             return {"success": True}
     return {"success": False}
 
