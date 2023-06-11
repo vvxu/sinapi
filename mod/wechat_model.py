@@ -41,6 +41,8 @@ class WeChatOAHandler:
             if self.is_get_verification_code(user_msg):
                 logging.info("self.is_get_verification_code")
                 return self.get_verification_code()
+        # 没得说了 就回复这个    
+        return self.send_msg("感谢关注~~~")
 
     def is_text_type(self):
         return self.MsgType == 'text'

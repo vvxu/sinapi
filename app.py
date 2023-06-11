@@ -2,18 +2,15 @@
 # from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request, Response, Depends, status
-from models import *
 import hashlib
-import time
 from starlette.responses import HTMLResponse
 from passlib.context import CryptContext
-from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
+
 # 引用mod中的方法
 from mod.voce_bot import *
 from mod.wechat_model import *
-# from mod.get_api_token import *
 from mod.connect_openai import *
 from mod.generate_data import *
 

@@ -25,6 +25,9 @@ chatgpt_username = ""
 chatgpt_password = ""
 chatgpt_token_url = ""
 
+chatgpt_expire_minutes = os.environ.get('CHATGPT_EXPIRE_MINUTES')
+
+
 class Settings:
     Api = {
         "HOST": "0.0.0.0",
@@ -36,18 +39,21 @@ class Settings:
         "access_token_expire_minutes": access_token_expire_minutes,
         "algorithm": "HS256",
     }
-    Chatgpt = {
-        "username": chatgpt_username,
-        "password": chatgpt_password,
-        "token_url": chatgpt_token_url
+    TokenData = {
+        "chatgpt_expire_minutes": chatgpt_expire_minutes
     }
+    # Chatgpt = {
+    #     "username": chatgpt_username,
+    #     "password": chatgpt_password,
+    #     "token_url": chatgpt_token_url
+    # }
     WechatOA = {
         "token": wechat_oa_token
     }
     Openai = {
         "secret": openai_key,
         "model": "gpt-3.5-turbo",
-        "voce_secret": voce_secret,
+        # "voce_secret": voce_secret,
     }
     VoceChat = {
         "secret": voce_secret,
