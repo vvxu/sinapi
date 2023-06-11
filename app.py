@@ -4,16 +4,18 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request, Response, Depends, status
 from models import *
 import hashlib
-from mod.voce_bot import *
-from mod.wechat_model import *
-from mod.get_api_token import *
-from mod.connect_openai import *
 import time
 from starlette.responses import HTMLResponse
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
+# 引用mod中的方法
+from mod.voce_bot import *
+from mod.wechat_model import *
+from mod.get_api_token import *
+from mod.connect_openai import *
+from mod.generate_data import *
 
 
 def get_user_info(user):
@@ -125,22 +127,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/verify")
-async def verify(item: dict, current_user: User = Depends(get_current_active_user)):
-    return "true"
-
-
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
-
-
-# chatgpt-api
-@app.post("/chatgpt")
-async def chatgpt(item: dict, current_user: User = Depends(get_current_active_user)):
-    logging.info("提问：%s" % item['messages'][-1]['content'])
-    ans = send_msg_to_openai(item["messages"])
-    return {"content": ans}
 
 
 # 验证连接
@@ -177,21 +166,12 @@ async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
 
 @app.post("/wechatOA")
 async def wechat(request: Request):
-    code = "123456"  # Generate a verification code (You can use your own logic here)
+    code = generate_random_string(6)  # Generate a verification code (You can use your own logic here)
     expire_time = datetime.now() + timedelta(hours=1)
     verification_code = VerificationCode(code=code, expire_time=expire_time)
     codes.append(verification_code)
     wechat_handler = WeChatOAHandler(await request.body(), code)
     return wechat_handler.handle()
-
-
-@app.post("/generate_code")
-async def generate_code():
-    code = "123456"  # Generate a verification code (You can use your own logic here)
-    expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
-    verification_code = VerificationCode(code=code, expire_time=expire_time)
-    codes.append(verification_code)
-    return {"code": code}
 
 
 @app.post("/validate_code")
@@ -200,8 +180,8 @@ async def validate_code(verification_code: VerificationCode):
     current_time = int(datetime.now().timestamp())
     for code in codes:
         if code.code == verification_code.code and code.expire_time > current_time:
-            return {"valid": True}
-    return {"valid": False}
+            return "true"
+    return "false"
 
 
 @app.post("/request_with_code")
@@ -211,4 +191,16 @@ async def request_with_code(verification_code: VerificationCode):
         if code.code == verification_code.code and code.expire_time > current_time:
             return {"success": True}
     return {"success": False}
+
+
+# chatgpt-api
+@app.post("/chatgpt")
+async def chatgpt(item: dict, verification_code: VerificationCode):
+    current_time = int(datetime.now().timestamp())
+    logging.info(f"{verification_code.code}提问：{item['messages'][-1]['content']}" )
+    for code in codes:
+        if code.code == verification_code.code and code.expire_time > current_time:
+            ans = send_msg_to_openai(item["messages"])
+            return {"content": ans}
+    return "false"
 

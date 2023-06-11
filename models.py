@@ -66,4 +66,4 @@ class VoceMsg(BaseModel):
 
 class VerificationCode(BaseModel):
     code: str
-    expire_time: datetime
+    expire_time: Union[int, None] = None
