@@ -147,10 +147,9 @@ async def post_voce_api(data: VoceMsg, background_tasks: BackgroundTasks):
 
 #     
 async def run_handler(data):
-    print(f"执行到31 {time.time()}")
     handler = MessageHandler(data)
-    print(f"执行到32 {time.time()}")
     handler.handle()
+
 
 codes = []
 
@@ -166,10 +165,12 @@ async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
 
 @app.post("/wechatOA")
 async def wechat(request: Request):
-    code = generate_random_string(6)  # Generate a verification code (You can use your own logic here)
-    expire_time = datetime.now() + timedelta(hours=1)
-    verification_code = VerificationCode(code=code, expire_time=expire_time)
-    codes.append(verification_code)
+    insert = GenerateCode("chatgpt", 6)
+    code = insert.insert_code()
+    # code = generate_random_string(6)
+    # expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
+    # verification_code = VerificationCode(code=code, expire_time=expire_time)
+    # codes.append(verification_code)
     wechat_handler = WeChatOAHandler(await request.body(), code)
     return wechat_handler.handle()
 
@@ -178,6 +179,11 @@ async def wechat(request: Request):
 async def validate_code(verification_code: VerificationCode):
     print(verification_code.code)
     current_time = int(datetime.now().timestamp())
+    
+    validate = GenerateCode("chatgpt", 6, verification_code.code)
+    code = validate.validate_code()
+
+    print (code)
     for code in codes:
         if code.code == verification_code.code and code.expire_time > current_time:
             return "true"
@@ -195,12 +201,12 @@ async def request_with_code(verification_code: VerificationCode):
 
 # chatgpt-api
 @app.post("/chatgpt")
-async def chatgpt(item: dict, verification_code: VerificationCode):
+async def chatgpt(item: dict):
     current_time = int(datetime.now().timestamp())
-    logging.info(f"{verification_code.code}提问：{item['messages'][-1]['content']}" )
+    logging.info(f"{item['messages']['code']}提问：{item['messages']['content'][-1]['content']}" )
     for code in codes:
-        if code.code == verification_code.code and code.expire_time > current_time:
-            ans = send_msg_to_openai(item["messages"])
+        if code.code == item["messages"]["code"] and code.expire_time > current_time:
+            ans = send_msg_to_openai(item["messages"]["content"])
             return {"content": ans}
     return "false"
 

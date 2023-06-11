@@ -56,14 +56,6 @@ class WeChatOAHandler:
 
     def get_verification_code(self):
         try:
-            # username = Settings.Chatgpt["username"]
-            # password = Settings.Chatgpt["password"]
-            # url = Settings.Chatgpt["token_url"]
-            # data = {"username": username, "password": password}
-            # res = requests.post(url, data=data)
-            # logging.info("get_this_api_token res")
-            # token = res.json()["access_token"]
-            print(self.code)
             return self.send_msg(self.code)
         except:
             return self.send_msg("获取验证码失败...")
