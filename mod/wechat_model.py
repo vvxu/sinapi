@@ -23,13 +23,14 @@ WECHAT_HELP = {
 
 
 class WeChatOAHandler:
-    def __init__(self, xml_data):
+    def __init__(self, xml_data, code):
         self.parse_xml = Et.fromstring(xml_data)
         self.xml_data = etree.fromstring(xml_data)
         self.ToUserName = self.parse_xml.find('ToUserName').text
         self.FromUserName = self.parse_xml.find('FromUserName').text
         self.CreateTime = self.parse_xml.find('CreateTime').text
         self.MsgType = self.parse_xml.find('MsgType').text
+        self.code = code
 
     def handle(self):
         if self.is_event_type():
@@ -62,7 +63,7 @@ class WeChatOAHandler:
             res = requests.post(url, data=data)
             logging.info("get_this_api_token res")
             token = res.json()["access_token"]
-            return self.send_msg(token)
+            return self.send_msg(self.code)
         except:
             return self.send_msg("获取验证码失败...")
 

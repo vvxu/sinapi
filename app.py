@@ -95,6 +95,11 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
+@app.get("/")
+async def index():
+    return "你好"
+
+
 # 路由
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -118,11 +123,6 @@ async def verify(item: dict, current_user: User = Depends(get_current_active_use
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
-
-
-@app.get("/")
-async def index():
-    return "你好"
 
 
 # chatgpt-api
@@ -153,6 +153,8 @@ async def run_handler(data):
     print(f"执行到32 {time.time()}")
     handler.handle()
 
+codes = []
+
 
 # 微信公众号接口
 @app.get("/wechatOA")
@@ -165,11 +167,12 @@ async def wechat(signature: str, echostr: str, timestamp: str, nonce: str):
 
 @app.post("/wechatOA")
 async def wechat(request: Request):
-    wechat_handler = WeChatOAHandler(await request.body())
+    code = "123456"  # Generate a verification code (You can use your own logic here)
+    expire_time = datetime.now() + timedelta(hours=1)
+    verification_code = VerificationCode(code=code, expire_time=expire_time)
+    codes.append(verification_code)
+    wechat_handler = WeChatOAHandler(await request.body(), code)
     return wechat_handler.handle()
-
-
-codes = []
 
 
 @app.post("/generate_code")
