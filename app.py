@@ -178,16 +178,16 @@ async def wechat(request: Request):
 @app.post("/validate_code")
 async def validate_code(verification_code: VerificationCode):
     print(verification_code.code)
-    current_time = int(datetime.now().timestamp())
+    # current_time = int(datetime.now().timestamp())
     
     validate = GenerateCode("chatgpt", 6, verification_code.code)
-    code = validate.validate_code()
+    return validate.validate_code()
 
-    print (code)
-    for code in codes:
-        if code.code == verification_code.code and code.expire_time > current_time:
-            return "true"
-    return "false"
+    # print (code)
+    # for code in codes:
+    #     if code.code == verification_code.code and code.expire_time > current_time:
+    #         return "true"
+    # return "false"
 
 
 @app.post("/request_with_code")

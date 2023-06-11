@@ -10,7 +10,10 @@ class GenerateCode:
         self.code = code
         self.length = length
         self.current_db = PymongoCRUD("token", dbname)
+        # 验证码时间
         self.expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
+        # 当前时间
+        self.current_time = int(datetime.now().timestamp())
 
     # 生成大写字符串
     def generate_random_string_letters(self):
@@ -53,5 +56,8 @@ class GenerateCode:
 
     # 验证
     def validate_code(self):
+        # 当前时间
         find_data = {"code": self.code}
-        return self.current_db.find_one(find_data)
+        if find_data["code"] == self.code and find_data["expire_time"] > self.current_time:
+            return "true"
+        return "false"
