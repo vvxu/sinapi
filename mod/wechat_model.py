@@ -2,7 +2,6 @@ import time
 from fastapi import Response
 import xml.etree.ElementTree as Et
 from lxml import etree
-# from mod.get_api_token import *
 import os
 import logging
 

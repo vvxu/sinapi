@@ -2,6 +2,7 @@ import random
 import string
 from mod.mongo_model import *
 from models import *
+from config import *
 
 
 class GenerateCode:
@@ -10,7 +11,8 @@ class GenerateCode:
         self.length = length
         self.current_db = PymongoCRUD("token", dbname)
         # 验证码时间
-        self.expire_time = int(datetime.now().timestamp() + timedelta(hours=1).total_seconds())
+        self.token_expire = int(Settings.TokenData["chatgpt_expire_minutes"])
+        self.expire_time = int(datetime.now().timestamp() + timedelta(minutes=self.token_expire).total_seconds())
         # 当前时间
         self.current_time = int(datetime.now().timestamp())
 
