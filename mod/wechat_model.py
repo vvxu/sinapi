@@ -10,7 +10,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.g
 
 
 # Command constants
-COMMAND_NEWCOMER_TEXT = "谢谢关注！！！ \n 发送指令：\n   验证码:可以获取网页验证码，验证码时效为3天!"
+COMMAND_NEWCOMER_TEXT = "谢谢关注！！！ \n 发送指令：\n   验证码:可以获取网页验证码，验证码时效为1个小时!"
 COMMAND_HELP = "帮助"
 COMMAND_GET_VERIFICATION_CODE = "验证码"
 
@@ -33,7 +33,7 @@ class WeChatOAHandler:
 
     def handle(self):
         if self.is_event_type():
-            return self.send_msg(self.is_event_type())
+            return self.send_msg(COMMAND_NEWCOMER_TEXT)
 
         if self.is_text_type():
             user_msg = self.get_user_msg()
