@@ -202,11 +202,19 @@ async def request_with_code(verification_code: VerificationCode):
 # chatgpt-api
 @app.post("/chatgpt")
 async def chatgpt(item: dict):
-    current_time = int(datetime.now().timestamp())
-    logging.info(f"{item['messages']['code']}提问：{item['messages']['content'][-1]['content']}" )
-    for code in codes:
-        if code.code == item["messages"]["code"] and code.expire_time > current_time:
-            ans = send_msg_to_openai(item["messages"]["content"])
-            return {"content": ans}
+    # current_time = int(datetime.now().timestamp())
+    validate = GenerateCode("chatgpt", 6, item["messages"]["code"])
+    
+    if validate.validate_code() == "true":
+        ans = send_msg_to_openai(item["messages"]["content"])
+        logging.info(f"{item['messages']['code']}提问：{item['messages']['content'][-1]['content']}")
+        return {"content": ans}
     return "false"
+
+    
+    # for code in codes:
+    #     if code.code == item["messages"]["code"] and code.expire_time > current_time:
+    #         ans = send_msg_to_openai(item["messages"]["content"])
+    #         return {"content": ans}
+    # return "false"
 
