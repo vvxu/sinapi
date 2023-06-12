@@ -27,6 +27,8 @@ chatgpt_token_url = ""
 
 chatgpt_expire_minutes = os.environ.get('CHATGPT_EXPIRE_MINUTES')
 
+voce_bot_dict = {}
+
 
 class Settings:
     Api = {
@@ -42,25 +44,20 @@ class Settings:
     TokenData = {
         "chatgpt_expire_minutes": chatgpt_expire_minutes
     }
-    # Chatgpt = {
-    #     "username": chatgpt_username,
-    #     "password": chatgpt_password,
-    #     "token_url": chatgpt_token_url
-    # }
     WechatOA = {
         "token": wechat_oa_token
     }
     Openai = {
         "secret": openai_key,
         "model": "gpt-3.5-turbo",
-        # "voce_secret": voce_secret,
     }
     VoceChat = {
         "secret": voce_secret,
         "url": voce_url,
         "sent_to": "send_to_user",
         "bot_id": str(voce_bot_id),
-        "dbname": voce_dbname
+        "dbname": voce_dbname,
+        "bot": voce_bot_dict
     }
     Mongo = {
         "uri": mongo_uri

@@ -14,12 +14,13 @@ from mod.voce_bot import *
 from mod.wechat_model import *
 from mod.connect_openai import *
 from mod.generate_data import *
+from mod.voce_bot_img import *
 
 
 def get_user_info(user):
     user_information = PymongoCRUD("userinformation", "user")
-    filter = {f'user.{user}.username': f'{user}'}
-    search_user = user_information.find_one(filter)
+    the_filter = {f'user.{user}.username': f'{user}'}
+    search_user = user_information.find_one(the_filter)
     return search_user["user"]
 
 
@@ -188,3 +189,20 @@ async def chatgpt(item: dict):
         logging.info(f"{item['messages']['code']}提问：{item['messages']['content'][-1]['content']}")
         return {"content": ans}
     return "false"
+
+
+@app.get("/voce_img")
+async def get_voce_img():
+    return {"status": "OK"}
+
+
+# 连接
+@app.post("/voce_img")
+async def post_voce_img(data: VoceMsg, background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_msg_handler, data)
+    return {"status": "OK"}
+
+
+async def run_msg_handler(data):
+    handler = ImageHandler(data)
+    handler.handle()

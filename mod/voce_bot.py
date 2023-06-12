@@ -1,10 +1,11 @@
 from config import *
-from mod.connect_openai import *
 import requests
 from mod.mongo_model import *
 import time
 import sys
 import logging
+from mod.connect_openai import *
+
 
 # 日志
 logging.basicConfig(format='%(asctime)s %(message)s', filename=os.path.join(os.getcwd(), 'log.txt'), level=logging.INFO)
@@ -198,8 +199,6 @@ class MessageHandler:
 
     def handle(self):
         # 如果是群发消息，不接收
-        sys.stdout = open('message_handler.log', 'a')
-        print(f"执行到5 {time.time()}")
         if self.is_group_message():
             return
         # 不处理bot的msg
@@ -250,7 +249,7 @@ class MessageHandler:
             self.mongo_manager.insert_user_current_voce_record_msg(self.created_at, self.user_id, "user", self.msg)
 
         return self.process_user_message()
-    
+        
     def is_group_message(self):
         return self.target_gid is not None
 
